@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fatima &amp; Avi</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1B0F22">
+<link rel="icon" href="images/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="bg-fx" aria-hidden="true"></div>
+
+<!-- ============ TOP NAV ============ -->
+<header class="topbar">
+  <div class="brand"><span class="brand-heart">♥</span> Fatima <span class="amp">&amp;</span> Avi</div>
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="home">Home</button>
+    <button class="tab-btn" data-tab="room">Room</button>
+    <button class="tab-btn" data-tab="games">Games</button>
+    <button class="tab-btn" data-tab="gallery">Gallery</button>
+    <button class="tab-btn" data-tab="music">Music</button>
+  </nav>
+  <div class="room-status" id="roomStatus">
+    <span class="dot" id="statusDot"></span>
+    <span id="statusText">not connected</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ HOME TAB ============ -->
+  <section id="tab-home" class="tab-panel active">
+    <div class="hero-wrap">
+      <div class="floaters" id="floaters" aria-hidden="true"></div>
+      <p class="eyebrow">welcome back to</p>
+      <h1 class="serif hero-title">our little corner</h1>
+      <p class="hero-sub">Everything the two of you need, in one small room that only opens for you two.</p>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-num" id="dayCount">0</div>
+          <div class="stat-label">days together</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="clock">--:--</div>
+          <div class="stat-label">your time now</div>
+        </div>
+      </div>
+
+      <div class="prompt-card" id="promptCard">
+        <p class="kicker">today's question</p>
+        <p class="prompt-text serif" id="promptText">Loading a question for you two…</p>
+        <button class="btn ghost" id="newPromptBtn">Ask another ↻</button>
+      </div>
+
+      <div class="quick-links">
+        <button class="quick-card" data-goto="room">
+          <span class="ic">📞</span>
+          <span>Open the room</span>
+        </button>
+        <button class="quick-card" data-goto="games">
+          <span class="ic">🎮</span>
+          <span>Play a game</span>
+        </button>
+        <button class="quick-card" data-goto="gallery">
+          <span class="ic">🖼️</span>
+          <span>Look at photos</span>
+        </button>
+        <button class="quick-card" data-goto="music">
+          <span class="ic">🎵</span>
+          <span>Play a song</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ROOM TAB (call + watch + chat) ============ -->
+  <section id="tab-room" class="tab-panel">
+    <div class="room-grid">
+
+      <div class="panel connect-panel">
+        <h2 class="serif panel-title">Connect</h2>
+        <p class="panel-sub">One of you creates the room, the other joins with the code.</p>
+
+        <div class="connect-actions">
+          <button class="btn primary" id="createRoomBtn">Create a room</button>
+          <div class="join-row">
+            <input type="text" id="joinCodeInput" placeholder="Enter room code" maxlength="10">
+            <button class="btn secondary" id="joinRoomBtn">Join</button>
+          </div>
+        </div>
+
+        <div class="room-code-display" id="roomCodeDisplay" hidden>
+          <p class="kicker">your room code</p>
+          <div class="code-box" id="codeBox">——</div>
+          <p class="hint">Send this to Fatima / Avi to join</p>
+        </div>
+
+        <div class="call-controls" id="callControls" hidden>
+          <button class="ctrl-btn" id="micBtn" title="Mute / unmute">🎤</button>
+          <button class="ctrl-btn" id="camBtn" title="Camera on / off">📷</button>
+          <button class="ctrl-btn" id="screenBtn" title="Share screen">🖥️</button>
+          <button class="ctrl-btn danger" id="hangupBtn" title="Leave room">✕</button>
+        </div>
+      </div>
+
+      <div class="panel video-panel">
+        <div class="video-tiles">
+          <div class="video-tile">
+            <video id="localVideo" autoplay playsinline muted></video>
+            <span class="tile-label">you</span>
+          </div>
+          <div class="video-tile">
+            <video id="remoteVideo" autoplay playsinline></video>
+            <span class="tile-label">them</span>
+            <div class="tile-empty" id="remoteEmpty">waiting for them to join…</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel watch-panel">
+        <h2 class="serif panel-title">Watch together</h2>
+        <div class="watch-input-row">
+          <input type="text" id="ytUrlInput" placeholder="Paste a YouTube link">
+          <button class="btn secondary" id="loadVideoBtn">Load &amp; sync</button>
+        </div>
+        <div class="yt-wrap">
+          <div id="ytPlayer"></div>
+          <div class="yt-empty" id="ytEmpty">Paste a link above to start watching together</div>
+        </div>
+      </div>
+
+      <div class="panel chat-panel">
+        <h2 class="serif panel-title">Chat</h2>
+        <div class="chat-log" id="chatLog"></div>
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" placeholder="Say something…" maxlength="300">
+          <button class="btn secondary" id="chatSendBtn">Send</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ GAMES TAB ============ -->
+  <section id="tab-games" class="tab-panel">
+    <div id="gameHub" class="game-hub">
+      <p class="kicker">two-player, synced live in your room</p>
+      <div class="game-grid">
+        <button class="game-card" data-game="ttt"><span class="ic">⭕</span><span>Tic-Tac-Toe</span></button>
+        <button class="game-card" data-game="connect4"><span class="ic">🔴</span><span>Connect 4</span></button>
+        <button class="game-card" data-game="chess"><span class="ic">♟️</span><span>Chess</span></button>
+        <button class="game-card" data-game="uno"><span class="ic">🃏</span><span>Uno</span></button>
+      </div>
+      <p class="kicker" style="margin-top:2rem;">solo, whenever you're alone</p>
+      <div class="game-grid">
+        <button class="game-card" data-game="wordsearch"><span class="ic">🔤</span><span>Word Search</span></button>
+        <button class="game-card" data-game="candy"><span class="ic">🍬</span><span>Candy Match</span></button>
+        <button class="game-card" data-game="memory"><span class="ic">🧠</span><span>Memory Match</span></button>
+        <button class="game-card" data-game="wyr"><span class="ic">💭</span><span>Would You Rather</span></button>
+      </div>
+    </div>
+
+    <div id="gameStage" class="game-stage" hidden>
+      <div class="game-stage-head">
+        <button class="btn ghost" id="backToHubBtn">← back to games</button>
+        <span id="gameStatus" class="game-status"></span>
+      </div>
+      <div id="gameBoard" class="game-board"></div>
+    </div>
+  </section>
+
+  <!-- ============ GALLERY TAB ============ -->
+  <section id="tab-gallery" class="tab-panel">
+    <div class="gallery-head">
+      <h2 class="serif panel-title">Photos</h2>
+      <button class="btn secondary" id="unlockGalleryBtn">Avi: unlock to add photos</button>
+    </div>
+    <div class="gallery-add" id="galleryAdd" hidden>
+      <input type="file" id="photoInput" accept="image/*" multiple>
+      <p class="hint">Added photos are saved on this device/browser only. For photos both of you always see, drop the image files into the <code>images</code> folder and list them in <code>app.js</code> before publishing.</p>
+    </div>
+    <div class="photo-grid" id="photoGrid"></div>
+  </section>
+
+  <!-- ============ MUSIC TAB ============ -->
+  <section id="tab-music" class="tab-panel">
+    <div class="music-wrap">
+      <div class="now-playing">
+        <div class="disc" id="disc"></div>
+        <div class="np-info">
+          <p class="kicker">now playing</p>
+          <p class="np-title serif" id="npTitle">Nothing yet</p>
+        </div>
+      </div>
+      <audio id="audioPlayer"></audio>
+      <div class="player-controls">
+        <button class="ctrl-btn" id="shuffleBtn" title="Shuffle">🔀</button>
+        <button class="ctrl-btn" id="prevBtn" title="Previous">⏮</button>
+        <button class="ctrl-btn big" id="playBtn" title="Play / pause">▶</button>
+        <button class="ctrl-btn" id="nextBtn" title="Next">⏭</button>
+        <button class="ctrl-btn" id="repeatBtn" title="Repeat">🔁</button>
+      </div>
+      <div class="seek-row">
+        <span id="curTime">0:00</span>
+        <input type="range" id="seekBar" min="0" max="100" value="0">
+        <span id="durTime">0:00</span>
+      </div>
+      <ul class="playlist" id="playlist"></ul>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ LIGHTBOX ============ -->
+<div id="lightbox" class="lightbox" hidden>
+  <button class="lightbox-close" id="lightboxClose">✕</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<!-- ============ LIBRARIES ============ -->
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chessboardjs/1.0.0/chessboard-1.0.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboardjs/1.0.0/chessboard-1.0.0.min.css">
+
+<!-- ============ APP SCRIPTS ============ -->
+<script src="app.js"></script>
+<script src="connect.js"></script>
+<script src="watch.js"></script>
+<script src="gallery.js"></script>
+<script src="games.js"></script>
+<script src="chess-game.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

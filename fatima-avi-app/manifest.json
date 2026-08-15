@@ -1,0 +1,14 @@
+{
+  "name": "Fatima & Avi",
+  "short_name": "Fatima & Avi",
+  "description": "A private space for calls, watching together, games, photos, and music.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1B0F22",
+  "theme_color": "#1B0F22",
+  "icons": [
+    { "src": "images/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
