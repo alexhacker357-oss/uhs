@@ -1,0 +1,2314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fatima &amp; Avi</title>
+<meta name="theme-color" content="#1B0F22">
+<link rel="icon" href="images/icon.svg" type="image/svg+xml">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;1,400;1,600&family=Work+Sans:wght@300;400;500;600&display=swap');
+
+:root{
+  --bg-deep:#1B0F22;
+  --bg-mid:#241430;
+  --bg-card:#2A1730;
+  --rose:#E8879B;
+  --rose-soft:#F3B4C0;
+  --gold:#D9A75B;
+  --ink:#F6ECEF;
+  --mauve:#B79AAE;
+  --mauve-dim:#8C6E85;
+  --line:rgba(246,236,239,0.14);
+  --good:#7ED0A0;
+  --bad:#E8879B;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  background:var(--bg-deep);
+  color:var(--ink);
+  font-family:'Work Sans', sans-serif;
+  line-height:1.6;
+  min-height:100vh;
+}
+.serif{font-family:'Fraunces', serif;}
+button{font-family:inherit; cursor:pointer;}
+input{font-family:inherit;}
+::selection{background:var(--rose); color:var(--bg-deep);}
+
+/* ---------------- animated background ---------------- */
+#bg-fx{
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse at 15% 8%, rgba(232,135,155,0.12), transparent 55%),
+    radial-gradient(ellipse at 90% 20%, rgba(217,167,91,0.10), transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(232,135,155,0.08), transparent 55%),
+    var(--bg-deep);
+  background-size:200% 200%;
+  animation:drift 24s ease-in-out infinite;
+}
+@keyframes drift{
+  0%,100%{background-position:0% 0%;}
+  50%{background-position:100% 60%;}
+}
+
+/* ---------------- top bar ---------------- */
+.topbar{
+  position:sticky; top:0; z-index:20;
+  display:flex; align-items:center; gap:1.5rem;
+  padding:0.9rem 1.5rem;
+  background:rgba(27,15,34,0.82);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+  flex-wrap:wrap;
+}
+.brand{font-family:'Fraunces', serif; font-style:italic; font-size:1.15rem; letter-spacing:0.01em;}
+.brand .amp{color:var(--rose-soft); font-style:normal;}
+.brand-heart{display:inline-block; color:var(--rose); animation:beat 1.8s ease-in-out infinite;}
+@keyframes beat{0%,100%{transform:scale(1);}25%{transform:scale(1.25);}40%{transform:scale(1);}}
+
+.tabs{display:flex; gap:0.35rem; flex-wrap:wrap; margin-left:auto;}
+.tab-btn{
+  background:transparent; border:1px solid transparent; color:var(--mauve);
+  padding:0.5rem 0.95rem; border-radius:999px; font-size:13.5px; font-weight:500;
+  transition:all 0.25s ease;
+}
+.tab-btn:hover{color:var(--ink); border-color:var(--line);}
+.tab-btn.active{background:var(--rose); color:var(--bg-deep);}
+
+.room-status{
+  display:flex; align-items:center; gap:0.5rem; font-size:12.5px; color:var(--mauve-dim);
+  margin-left:0.5rem;
+}
+.dot{width:8px; height:8px; border-radius:50%; background:var(--mauve-dim); transition:background 0.3s;}
+.dot.on{background:var(--good); box-shadow:0 0 8px var(--good); animation:pulseDot 1.6s ease-in-out infinite;}
+@keyframes pulseDot{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+main{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:0 1.25rem 4rem;}
+
+.tab-panel{display:none; animation:fadeUp 0.5s ease;}
+.tab-panel.active{display:block;}
+@keyframes fadeUp{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);}}
+
+/* ---------------- buttons ---------------- */
+.btn{
+  border-radius:10px; padding:0.7rem 1.3rem; font-size:14px; font-weight:500;
+  border:1px solid var(--line); transition:all 0.25s ease;
+}
+.btn.primary{background:var(--rose); color:var(--bg-deep); border-color:var(--rose);}
+.btn.primary:hover{background:var(--rose-soft); transform:translateY(-1px);}
+.btn.secondary{background:transparent; color:var(--ink); border-color:var(--line);}
+.btn.secondary:hover{border-color:var(--rose); color:var(--rose-soft);}
+.btn.ghost{background:transparent; color:var(--mauve); border-color:transparent; padding:0.4rem 0.6rem;}
+.btn.ghost:hover{color:var(--rose-soft);}
+
+.ctrl-btn{
+  width:44px; height:44px; border-radius:50%; border:1px solid var(--line);
+  background:var(--bg-card); color:var(--ink); font-size:17px;
+  display:flex; align-items:center; justify-content:center; transition:all 0.2s ease;
+}
+.ctrl-btn:hover{border-color:var(--rose); transform:translateY(-2px);}
+.ctrl-btn.active-off{background:var(--bad); border-color:var(--bad);}
+.ctrl-btn.danger{background:transparent; color:var(--bad); border-color:var(--bad);}
+.ctrl-btn.danger:hover{background:var(--bad); color:var(--bg-deep);}
+.ctrl-btn.big{width:56px; height:56px; font-size:20px; background:var(--rose); color:var(--bg-deep); border-color:var(--rose);}
+
+/* ---------------- HOME ---------------- */
+.hero-wrap{position:relative; text-align:center; padding:4rem 0 2rem;}
+.floaters{position:absolute; inset:0; overflow:hidden; pointer-events:none;}
+.floaters span{
+  position:absolute; bottom:-40px; font-size:18px; opacity:0;
+  animation:floatUp 10s linear infinite;
+}
+@keyframes floatUp{
+  0%{transform:translateY(0) rotate(0deg); opacity:0;}
+  10%{opacity:0.8;}
+  90%{opacity:0.6;}
+  100%{transform:translateY(-620px) rotate(25deg); opacity:0;}
+}
+.eyebrow{font-size:13px; letter-spacing:0.14em; text-transform:uppercase; color:var(--mauve); margin:0 0 0.5rem;}
+.hero-title{font-size:clamp(2.4rem,6vw,4rem); font-weight:300; font-style:italic; margin:0;}
+.hero-sub{color:var(--mauve); max-width:480px; margin:1rem auto 0;}
+
+.stat-row{display:flex; gap:1rem; justify-content:center; margin:2.5rem 0;}
+.stat-card{
+  background:var(--bg-card); border:1px solid var(--line); border-radius:16px;
+  padding:1.4rem 2.2rem; min-width:140px; transition:transform 0.3s ease;
+}
+.stat-card:hover{transform:translateY(-4px);}
+.stat-num{font-family:'Fraunces', serif; font-size:2.1rem; color:var(--rose-soft);}
+.stat-label{font-size:12px; color:var(--mauve-dim); text-transform:uppercase; letter-spacing:0.08em; margin-top:0.3rem;}
+
+.prompt-card{
+  max-width:520px; margin:0 auto; background:linear-gradient(180deg, rgba(232,135,155,0.09), rgba(246,236,239,0.02));
+  border:1px solid var(--line); border-radius:18px; padding:1.8rem 2rem;
+}
+.kicker{font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); margin:0 0 0.6rem;}
+.prompt-text{font-size:1.3rem; font-style:italic; margin:0 0 1.2rem;}
+
+.quick-links{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:0.9rem; max-width:640px; margin:2.5rem auto 0;}
+.quick-card{
+  background:var(--bg-card); border:1px solid var(--line); border-radius:14px; padding:1.2rem 0.8rem;
+  color:var(--ink); display:flex; flex-direction:column; align-items:center; gap:0.5rem; font-size:13px;
+  transition:all 0.3s ease;
+}
+.quick-card:hover{transform:translateY(-4px); border-color:var(--rose);}
+.quick-card .ic{font-size:22px;}
+
+/* ---------------- ROOM ---------------- */
+.room-grid{display:grid; grid-template-columns:340px 1fr; gap:1.25rem; padding-top:2rem;}
+@media (max-width:900px){.room-grid{grid-template-columns:1fr;}}
+.panel{background:var(--bg-card); border:1px solid var(--line); border-radius:16px; padding:1.5rem;}
+.panel-title{font-size:1.3rem; font-weight:400; margin:0 0 0.3rem;}
+.panel-sub{color:var(--mauve); font-size:13.5px; margin:0 0 1.2rem;}
+
+.connect-actions{display:flex; flex-direction:column; gap:0.8rem;}
+.join-row{display:flex; gap:0.5rem;}
+.join-row input, .watch-input-row input, .chat-input-row input{
+  flex:1; background:var(--bg-mid); border:1px solid var(--line); border-radius:10px;
+  padding:0.65rem 0.9rem; color:var(--ink); font-size:14px; min-width:0;
+}
+.join-row input:focus, .watch-input-row input:focus, .chat-input-row input:focus{outline:none; border-color:var(--rose);}
+
+.room-code-display{margin-top:1.2rem; text-align:center;}
+.code-box{
+  font-family:'Fraunces', serif; font-size:2rem; letter-spacing:0.08em; color:var(--rose-soft);
+  background:var(--bg-mid); border:1px dashed var(--rose); border-radius:12px; padding:0.7rem; margin:0.5rem 0;
+}
+.hint{font-size:12px; color:var(--mauve-dim);}
+
+.call-controls{display:flex; gap:0.7rem; justify-content:center; margin-top:1.5rem;}
+
+.video-panel{padding:1rem;}
+.video-tiles{display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;}
+.video-tile{
+  position:relative; background:var(--bg-mid); border-radius:14px; overflow:hidden;
+  aspect-ratio:4/3; border:1px solid var(--line);
+}
+.video-tile video{width:100%; height:100%; object-fit:cover; display:block;}
+.tile-label{position:absolute; bottom:8px; left:10px; font-size:12px; background:rgba(0,0,0,0.5); padding:2px 8px; border-radius:999px;}
+.tile-empty{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--mauve-dim); font-size:12.5px; text-align:center; padding:1rem;}
+
+.watch-panel{grid-column:1 / -1;}
+.watch-input-row{display:flex; gap:0.6rem; margin-bottom:1rem;}
+.yt-wrap{position:relative; width:100%; aspect-ratio:16/9; background:var(--bg-mid); border-radius:12px; overflow:hidden;}
+#ytPlayer{width:100%; height:100%;}
+.yt-empty{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--mauve-dim); font-size:13px;}
+
+.chat-panel{grid-column:1 / -1; max-width:520px;}
+.chat-log{height:180px; overflow-y:auto; background:var(--bg-mid); border-radius:10px; padding:0.8rem; margin-bottom:0.8rem; font-size:13.5px;}
+.chat-msg{margin-bottom:0.5rem;}
+.chat-msg.me{color:var(--rose-soft); text-align:right;}
+.chat-msg.them{color:var(--gold);}
+.chat-msg .sys{color:var(--mauve-dim); font-style:italic;}
+.chat-input-row{display:flex; gap:0.6rem;}
+
+/* ---------------- GAMES ---------------- */
+.game-hub{padding-top:1.5rem;}
+.game-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:1rem;}
+.game-card{
+  background:var(--bg-card); border:1px solid var(--line); border-radius:14px; padding:1.4rem 0.8rem;
+  display:flex; flex-direction:column; align-items:center; gap:0.6rem; color:var(--ink); font-size:13.5px;
+  transition:all 0.3s ease;
+}
+.game-card:hover{transform:translateY(-4px); border-color:var(--rose);}
+.game-card .ic{font-size:26px;}
+
+.game-stage{padding-top:1.5rem;}
+.game-stage-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;}
+.game-status{font-size:13px; color:var(--mauve);}
+.game-board{display:flex; justify-content:center; padding:1rem;}
+
+/* tic tac toe / connect4 grids */
+.ttt-grid{display:grid; grid-template-columns:repeat(3,80px); grid-template-rows:repeat(3,80px); gap:6px;}
+.ttt-cell{
+  background:var(--bg-card); border:1px solid var(--line); border-radius:10px;
+  display:flex; align-items:center; justify-content:center; font-size:2rem; font-family:'Fraunces',serif;
+  transition:background 0.2s ease;
+}
+.ttt-cell:hover{background:var(--bg-mid);}
+
+.c4-grid{display:grid; grid-template-columns:repeat(7,44px); grid-template-rows:repeat(6,44px); gap:5px; background:var(--bg-card); padding:10px; border-radius:12px;}
+.c4-cell{width:44px; height:44px; border-radius:50%; background:var(--bg-mid);}
+.c4-cell.red{background:var(--rose);}
+.c4-cell.yellow{background:var(--gold);}
+.c4-col{display:flex; flex-direction:column; gap:5px; cursor:pointer;}
+
+/* memory match */
+.memory-grid{display:grid; grid-template-columns:repeat(4,70px); gap:8px;}
+.memory-card{
+  width:70px; height:70px; border-radius:10px; background:var(--bg-card); border:1px solid var(--line);
+  display:flex; align-items:center; justify-content:center; font-size:1.6rem; transition:transform 0.3s;
+}
+.memory-card.flipped{background:var(--bg-mid);}
+.memory-card.matched{background:rgba(126,208,160,0.18); border-color:var(--good);}
+
+/* candy match */
+.candy-grid{display:grid; grid-template-columns:repeat(6,48px); grid-template-rows:repeat(6,48px); gap:4px;}
+.candy-cell{
+  width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+  font-size:1.5rem; background:var(--bg-card); border:1px solid var(--line); transition:transform 0.15s;
+}
+.candy-cell.selected{outline:2px solid var(--rose);}
+
+/* word search */
+.ws-grid{display:grid; gap:2px; user-select:none;}
+.ws-cell{
+  width:32px; height:32px; display:flex; align-items:center; justify-content:center;
+  background:var(--bg-card); font-size:14px; border-radius:4px; font-weight:500;
+}
+.ws-cell.found{background:rgba(126,208,160,0.35); color:var(--good);}
+.ws-cell.selecting{background:var(--rose); color:var(--bg-deep);}
+.ws-words{display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:1rem; justify-content:center;}
+.ws-word{font-size:12.5px; padding:3px 10px; border-radius:999px; border:1px solid var(--line); color:var(--mauve);}
+.ws-word.found{color:var(--good); border-color:var(--good); text-decoration:line-through;}
+
+/* would you rather */
+.wyr-card{max-width:480px; text-align:center;}
+.wyr-options{display:flex; gap:1rem; margin-top:1.5rem;}
+.wyr-opt{flex:1; padding:1.2rem; border-radius:14px;}
+
+/* chess */
+#chessBoard{width:360px;}
+
+/* uno */
+.uno-hand{display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin-top:1rem;}
+.uno-card{
+  width:52px; height:76px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+  font-family:'Fraunces',serif; font-weight:600; font-size:1.1rem; color:#fff; transition:transform 0.2s;
+}
+.uno-card:hover{transform:translateY(-6px);}
+.uno-pile{display:flex; justify-content:center; gap:1.5rem; margin:1rem 0;}
+
+/* ---------------- GALLERY ---------------- */
+.gallery-head{display:flex; align-items:center; justify-content:space-between; padding-top:1.5rem; flex-wrap:wrap; gap:0.8rem;}
+.gallery-add{margin:1rem 0;}
+.gallery-add .hint{max-width:520px;}
+.photo-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:0.8rem; margin-top:1.2rem;}
+.photo-thumb{
+  aspect-ratio:1; border-radius:12px; overflow:hidden; border:1px solid var(--line); cursor:pointer;
+  transition:transform 0.3s ease;
+}
+.photo-thumb:hover{transform:scale(1.03);}
+.photo-thumb img{width:100%; height:100%; object-fit:cover; display:block;}
+.photo-empty{color:var(--mauve-dim); font-size:13.5px; text-align:center; padding:3rem 0; grid-column:1/-1;}
+
+.lightbox{
+  position:fixed; inset:0; background:rgba(10,5,13,0.92); z-index:50;
+  display:flex; align-items:center; justify-content:center;
+}
+.lightbox img{max-width:88vw; max-height:86vh; border-radius:10px;}
+.lightbox-close{
+  position:absolute; top:1.2rem; right:1.5rem; background:transparent; border:none; color:var(--ink); font-size:1.5rem;
+}
+
+/* ---------------- MUSIC ---------------- */
+.music-wrap{max-width:520px; margin:2rem auto 0; text-align:center;}
+.now-playing{display:flex; align-items:center; gap:1rem; justify-content:center; margin-bottom:1.5rem;}
+.disc{
+  width:64px; height:64px; border-radius:50%;
+  background:radial-gradient(circle at center, var(--bg-deep) 0 14px, var(--rose) 15px, var(--gold) 60px);
+  animation:spin 6s linear infinite; animation-play-state:paused;
+}
+.disc.spinning{animation-play-state:running;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.np-info{text-align:left;}
+.np-title{font-size:1.15rem; margin:0.2rem 0 0;}
+
+.player-controls{display:flex; gap:0.8rem; justify-content:center; align-items:center; margin:1.2rem 0;}
+.seek-row{display:flex; align-items:center; gap:0.6rem; font-size:12px; color:var(--mauve-dim);}
+.seek-row input{flex:1; accent-color:var(--rose);}
+
+.playlist{list-style:none; padding:0; margin:1.5rem 0 0; text-align:left;}
+.playlist li{
+  padding:0.7rem 0.9rem; border-radius:10px; margin-bottom:0.4rem; font-size:13.5px;
+  background:var(--bg-card); border:1px solid var(--line); cursor:pointer; transition:all 0.2s ease;
+  display:flex; justify-content:space-between;
+}
+.playlist li:hover{border-color:var(--rose);}
+.playlist li.playing{color:var(--rose-soft); border-color:var(--rose);}
+
+/* ---------------- misc ---------------- */
+.note{
+  border-left:2px solid var(--gold); padding:0.8rem 1.1rem; background:rgba(217,167,91,0.06);
+  border-radius:0 10px 10px 0; font-size:13px; color:var(--mauve); margin-top:1rem;
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition:none !important;}
+}
+
+</style>
+</head>
+<body>
+
+<div id="bg-fx" aria-hidden="true"></div>
+
+<!-- ============ TOP NAV ============ -->
+<header class="topbar">
+  <div class="brand"><span class="brand-heart">♥</span> Fatima <span class="amp">&amp;</span> Avi</div>
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="home">Home</button>
+    <button class="tab-btn" data-tab="room">Room</button>
+    <button class="tab-btn" data-tab="games">Games</button>
+    <button class="tab-btn" data-tab="gallery">Gallery</button>
+    <button class="tab-btn" data-tab="music">Music</button>
+  </nav>
+  <div class="room-status" id="roomStatus">
+    <span class="dot" id="statusDot"></span>
+    <span id="statusText">not connected</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ HOME TAB ============ -->
+  <section id="tab-home" class="tab-panel active">
+    <div class="hero-wrap">
+      <div class="floaters" id="floaters" aria-hidden="true"></div>
+      <p class="eyebrow">welcome back to</p>
+      <h1 class="serif hero-title">our little corner</h1>
+      <p class="hero-sub">Everything the two of you need, in one small room that only opens for you two.</p>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-num" id="dayCount">0</div>
+          <div class="stat-label">days together</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="clock">--:--</div>
+          <div class="stat-label">your time now</div>
+        </div>
+      </div>
+
+      <div class="prompt-card" id="promptCard">
+        <p class="kicker">today's question</p>
+        <p class="prompt-text serif" id="promptText">Loading a question for you two…</p>
+        <button class="btn ghost" id="newPromptBtn">Ask another ↻</button>
+      </div>
+
+      <div class="quick-links">
+        <button class="quick-card" data-goto="room">
+          <span class="ic">📞</span>
+          <span>Open the room</span>
+        </button>
+        <button class="quick-card" data-goto="games">
+          <span class="ic">🎮</span>
+          <span>Play a game</span>
+        </button>
+        <button class="quick-card" data-goto="gallery">
+          <span class="ic">🖼️</span>
+          <span>Look at photos</span>
+        </button>
+        <button class="quick-card" data-goto="music">
+          <span class="ic">🎵</span>
+          <span>Play a song</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ROOM TAB (call + watch + chat) ============ -->
+  <section id="tab-room" class="tab-panel">
+    <div class="room-grid">
+
+      <div class="panel connect-panel">
+        <h2 class="serif panel-title">Connect</h2>
+        <p class="panel-sub">One of you creates the room, the other joins with the code.</p>
+
+        <div class="connect-actions">
+          <button class="btn primary" id="createRoomBtn">Create a room</button>
+          <div class="join-row">
+            <input type="text" id="joinCodeInput" placeholder="Enter room code" maxlength="10">
+            <button class="btn secondary" id="joinRoomBtn">Join</button>
+          </div>
+        </div>
+
+        <div class="room-code-display" id="roomCodeDisplay" hidden>
+          <p class="kicker">your room code</p>
+          <div class="code-box" id="codeBox">——</div>
+          <p class="hint">Send this to Fatima / Avi to join</p>
+        </div>
+
+        <div class="call-controls" id="callControls" hidden>
+          <button class="ctrl-btn" id="micBtn" title="Mute / unmute">🎤</button>
+          <button class="ctrl-btn" id="camBtn" title="Camera on / off">📷</button>
+          <button class="ctrl-btn" id="screenBtn" title="Share screen">🖥️</button>
+          <button class="ctrl-btn danger" id="hangupBtn" title="Leave room">✕</button>
+        </div>
+      </div>
+
+      <div class="panel video-panel">
+        <div class="video-tiles">
+          <div class="video-tile">
+            <video id="localVideo" autoplay playsinline muted></video>
+            <span class="tile-label">you</span>
+          </div>
+          <div class="video-tile">
+            <video id="remoteVideo" autoplay playsinline></video>
+            <span class="tile-label">them</span>
+            <div class="tile-empty" id="remoteEmpty">waiting for them to join…</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel watch-panel">
+        <h2 class="serif panel-title">Watch together</h2>
+        <div class="watch-input-row">
+          <input type="text" id="ytUrlInput" placeholder="Paste a YouTube link">
+          <button class="btn secondary" id="loadVideoBtn">Load &amp; sync</button>
+        </div>
+        <div class="yt-wrap">
+          <div id="ytPlayer"></div>
+          <div class="yt-empty" id="ytEmpty">Paste a link above to start watching together</div>
+        </div>
+      </div>
+
+      <div class="panel chat-panel">
+        <h2 class="serif panel-title">Chat</h2>
+        <div class="chat-log" id="chatLog"></div>
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" placeholder="Say something…" maxlength="300">
+          <button class="btn secondary" id="chatSendBtn">Send</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ GAMES TAB ============ -->
+  <section id="tab-games" class="tab-panel">
+    <div id="gameHub" class="game-hub">
+      <p class="kicker">two-player, synced live in your room</p>
+      <div class="game-grid">
+        <button class="game-card" data-game="ttt"><span class="ic">⭕</span><span>Tic-Tac-Toe</span></button>
+        <button class="game-card" data-game="connect4"><span class="ic">🔴</span><span>Connect 4</span></button>
+        <button class="game-card" data-game="chess"><span class="ic">♟️</span><span>Chess</span></button>
+        <button class="game-card" data-game="uno"><span class="ic">🃏</span><span>Uno</span></button>
+      </div>
+      <p class="kicker" style="margin-top:2rem;">solo, whenever you're alone</p>
+      <div class="game-grid">
+        <button class="game-card" data-game="wordsearch"><span class="ic">🔤</span><span>Word Search</span></button>
+        <button class="game-card" data-game="candy"><span class="ic">🍬</span><span>Candy Match</span></button>
+        <button class="game-card" data-game="memory"><span class="ic">🧠</span><span>Memory Match</span></button>
+        <button class="game-card" data-game="wyr"><span class="ic">💭</span><span>Would You Rather</span></button>
+      </div>
+    </div>
+
+    <div id="gameStage" class="game-stage" hidden>
+      <div class="game-stage-head">
+        <button class="btn ghost" id="backToHubBtn">← back to games</button>
+        <span id="gameStatus" class="game-status"></span>
+      </div>
+      <div id="gameBoard" class="game-board"></div>
+    </div>
+  </section>
+
+  <!-- ============ GALLERY TAB ============ -->
+  <section id="tab-gallery" class="tab-panel">
+    <div class="gallery-head">
+      <h2 class="serif panel-title">Photos</h2>
+      <button class="btn secondary" id="unlockGalleryBtn">Avi: unlock to add photos</button>
+    </div>
+    <div class="gallery-add" id="galleryAdd" hidden>
+      <input type="file" id="photoInput" accept="image/*" multiple>
+      <p class="hint">Added photos are saved on this device/browser only. For photos both of you always see, drop the image files into the <code>images</code> folder and list them in <code>app.js</code> before publishing.</p>
+    </div>
+    <div class="photo-grid" id="photoGrid"></div>
+  </section>
+
+  <!-- ============ MUSIC TAB ============ -->
+  <section id="tab-music" class="tab-panel">
+    <div class="music-wrap">
+      <div class="now-playing">
+        <div class="disc" id="disc"></div>
+        <div class="np-info">
+          <p class="kicker">now playing</p>
+          <p class="np-title serif" id="npTitle">Nothing yet</p>
+        </div>
+      </div>
+      <audio id="audioPlayer"></audio>
+      <div class="player-controls">
+        <button class="ctrl-btn" id="shuffleBtn" title="Shuffle">🔀</button>
+        <button class="ctrl-btn" id="prevBtn" title="Previous">⏮</button>
+        <button class="ctrl-btn big" id="playBtn" title="Play / pause">▶</button>
+        <button class="ctrl-btn" id="nextBtn" title="Next">⏭</button>
+        <button class="ctrl-btn" id="repeatBtn" title="Repeat">🔁</button>
+      </div>
+      <div class="seek-row">
+        <span id="curTime">0:00</span>
+        <input type="range" id="seekBar" min="0" max="100" value="0">
+        <span id="durTime">0:00</span>
+      </div>
+      <ul class="playlist" id="playlist"></ul>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ LIGHTBOX ============ -->
+<div id="lightbox" class="lightbox" hidden>
+  <button class="lightbox-close" id="lightboxClose">✕</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<!-- ============ LIBRARIES ============ -->
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chessboardjs/1.0.0/chessboard-1.0.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboardjs/1.0.0/chessboard-1.0.0.min.css">
+
+<!-- ============ APP SCRIPTS ============ -->
+<script>
+/* ============================================================
+   EDIT THIS SECTION — your personal lists
+   ============================================================ */
+
+// The date you two count from. Change to your real start date.
+const START_DATE = "2024-01-01";
+
+// Photo filenames living in the /images folder (baked into the site for both of you).
+const PHOTOS = [
+  // "images/photo1.jpg",
+  // "images/photo2.jpg",
+];
+
+// Song filenames living in the /music folder.
+const SONGS = [
+  // { title: "Our Song", file: "music/our-song.mp3" },
+];
+
+// Daily questions for the two of you.
+const PROMPTS = [
+  "What's one small thing I did this week that made you smile?",
+  "If we could teleport anywhere right now, where would we go?",
+  "What's a memory of us you think about often?",
+  "What's something you're looking forward to?",
+  "What's your favorite thing about today so far?",
+  "If we picked a song for this week, what would it be?",
+  "What's one thing you want to do together before the year ends?",
+];
+
+/* ============================================================
+   Below this line is app logic — no need to edit
+   ============================================================ */
+
+const AppState = {
+  currentTab: "home",
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  initTabs();
+  initHome();
+  initFloaters();
+  initMusicPlayer();
+});
+
+/* ---------------- tabs ---------------- */
+function initTabs() {
+  const buttons = document.querySelectorAll(".tab-btn");
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+  });
+  document.querySelectorAll("[data-goto]").forEach((el) => {
+    el.addEventListener("click", () => switchTab(el.dataset.goto));
+  });
+}
+
+function switchTab(tab) {
+  AppState.currentTab = tab;
+  document.querySelectorAll(".tab-btn").forEach((b) => {
+    b.classList.toggle("active", b.dataset.tab === tab);
+  });
+  document.querySelectorAll(".tab-panel").forEach((p) => {
+    p.classList.toggle("active", p.id === `tab-${tab}`);
+  });
+  if (tab === "gallery" && window.Gallery) window.Gallery.render();
+}
+
+/* ---------------- home: day counter + clock + prompt ---------------- */
+function initHome() {
+  updateDayCount();
+  updateClock();
+  setInterval(updateClock, 1000 * 30);
+
+  const promptText = document.getElementById("promptText");
+  const newPromptBtn = document.getElementById("newPromptBtn");
+  let lastIndex = -1;
+
+  function showRandomPrompt() {
+    if (!PROMPTS.length) {
+      promptText.textContent = "Add your own questions to the PROMPTS list in app.js.";
+      return;
+    }
+    let idx = Math.floor(Math.random() * PROMPTS.length);
+    if (PROMPTS.length > 1) {
+      while (idx === lastIndex) idx = Math.floor(Math.random() * PROMPTS.length);
+    }
+    lastIndex = idx;
+    promptText.style.opacity = 0;
+    setTimeout(() => {
+      promptText.textContent = PROMPTS[idx];
+      promptText.style.opacity = 1;
+    }, 200);
+  }
+
+  promptText.style.transition = "opacity 0.2s ease";
+  showRandomPrompt();
+  newPromptBtn.addEventListener("click", showRandomPrompt);
+}
+
+function updateDayCount() {
+  const start = new Date(START_DATE);
+  const now = new Date();
+  const diffMs = now - start;
+  const days = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+  const el = document.getElementById("dayCount");
+  animateNumber(el, 0, days, 900);
+}
+
+function animateNumber(el, from, to, duration) {
+  const start = performance.now();
+  function tick(now) {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(from + (to - from) * eased);
+    if (t < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function updateClock() {
+  const el = document.getElementById("clock");
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, "0");
+  const mm = String(now.getMinutes()).padStart(2, "0");
+  el.textContent = `${hh}:${mm}`;
+}
+
+/* ---------------- floating hearts on home ---------------- */
+function initFloaters() {
+  const field = document.getElementById("floaters");
+  const glyphs = ["♥", "✦", "♥"];
+  for (let i = 0; i < 12; i++) {
+    const span = document.createElement("span");
+    span.textContent = glyphs[i % glyphs.length];
+    span.style.left = Math.random() * 100 + "%";
+    span.style.animationDelay = Math.random() * 10 + "s";
+    span.style.animationDuration = 8 + Math.random() * 6 + "s";
+    span.style.color = i % 2 === 0 ? "var(--rose)" : "var(--gold)";
+    field.appendChild(span);
+  }
+}
+
+/* ---------------- music player ---------------- */
+const MusicState = {
+  index: 0,
+  playing: false,
+  shuffle: false,
+  repeat: false,
+};
+
+function initMusicPlayer() {
+  const audio = document.getElementById("audioPlayer");
+  const playBtn = document.getElementById("playBtn");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const shuffleBtn = document.getElementById("shuffleBtn");
+  const repeatBtn = document.getElementById("repeatBtn");
+  const seekBar = document.getElementById("seekBar");
+  const curTime = document.getElementById("curTime");
+  const durTime = document.getElementById("durTime");
+  const npTitle = document.getElementById("npTitle");
+  const disc = document.getElementById("disc");
+  const playlistEl = document.getElementById("playlist");
+
+  renderPlaylist();
+
+  function renderPlaylist() {
+    playlistEl.innerHTML = "";
+    if (!SONGS.length) {
+      playlistEl.innerHTML = `<li style="cursor:default;">Add songs to the SONGS list in app.js, and drop the mp3 files in /music.</li>`;
+      return;
+    }
+    SONGS.forEach((song, i) => {
+      const li = document.createElement("li");
+      li.textContent = song.title;
+      li.dataset.index = i;
+      if (i === MusicState.index) li.classList.add("playing");
+      li.addEventListener("click", () => loadSong(i, true));
+      playlistEl.appendChild(li);
+    });
+  }
+
+  function loadSong(i, autoplay) {
+    if (!SONGS.length) return;
+    MusicState.index = (i + SONGS.length) % SONGS.length;
+    const song = SONGS[MusicState.index];
+    audio.src = song.file;
+    npTitle.textContent = song.title;
+    [...playlistEl.children].forEach((li, idx) => {
+      li.classList.toggle("playing", idx === MusicState.index);
+    });
+    if (autoplay) play();
+  }
+
+  function play() {
+    if (!SONGS.length) return;
+    if (!audio.src) loadSong(MusicState.index, false);
+    audio.play();
+    MusicState.playing = true;
+    playBtn.textContent = "⏸";
+    disc.classList.add("spinning");
+  }
+  function pause() {
+    audio.pause();
+    MusicState.playing = false;
+    playBtn.textContent = "▶";
+    disc.classList.remove("spinning");
+  }
+
+  playBtn.addEventListener("click", () => (MusicState.playing ? pause() : play()));
+  nextBtn.addEventListener("click", () => {
+    const next = MusicState.shuffle
+      ? Math.floor(Math.random() * SONGS.length)
+      : MusicState.index + 1;
+    loadSong(next, true);
+  });
+  prevBtn.addEventListener("click", () => loadSong(MusicState.index - 1, true));
+  shuffleBtn.addEventListener("click", () => {
+    MusicState.shuffle = !MusicState.shuffle;
+    shuffleBtn.style.color = MusicState.shuffle ? "var(--rose-soft)" : "";
+  });
+  repeatBtn.addEventListener("click", () => {
+    MusicState.repeat = !MusicState.repeat;
+    repeatBtn.style.color = MusicState.repeat ? "var(--rose-soft)" : "";
+  });
+
+  audio.addEventListener("timeupdate", () => {
+    if (!audio.duration) return;
+    seekBar.value = (audio.currentTime / audio.duration) * 100;
+    curTime.textContent = formatTime(audio.currentTime);
+    durTime.textContent = formatTime(audio.duration);
+  });
+  seekBar.addEventListener("input", () => {
+    if (!audio.duration) return;
+    audio.currentTime = (seekBar.value / 100) * audio.duration;
+  });
+  audio.addEventListener("ended", () => {
+    if (MusicState.repeat) {
+      audio.currentTime = 0;
+      audio.play();
+    } else {
+      nextBtn.click();
+    }
+  });
+
+  function formatTime(s) {
+    if (!isFinite(s)) return "0:00";
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60).toString().padStart(2, "0");
+    return `${m}:${sec}`;
+  }
+}
+
+</script>
+<script>
+/* ============================================================
+   Room — shared peer-to-peer connection used by watch.js, games.js,
+   chess-game.js, and the in-room chat. Everything talks through
+   Room.send(obj) and Room.on(type, handler).
+   ============================================================ */
+
+const Room = (() => {
+  let peer = null;
+  let dataConn = null;
+  let mediaCall = null;
+  let localStream = null;
+  let cameraTrack = null;
+  let isHost = false;
+  let connected = false;
+
+  const handlers = {}; // type -> [callbacks]
+
+  function on(type, cb) {
+    (handlers[type] = handlers[type] || []).push(cb);
+  }
+
+  function emit(type, payload) {
+    (handlers[type] || []).forEach((cb) => cb(payload));
+  }
+
+  function send(obj) {
+    if (dataConn && dataConn.open) {
+      dataConn.send(obj);
+    }
+  }
+
+  function setStatus(text, on) {
+    document.getElementById("statusText").textContent = text;
+    document.getElementById("statusDot").classList.toggle("on", !!on);
+  }
+
+  async function getLocalMedia() {
+    if (localStream) return localStream;
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      document.getElementById("localVideo").srcObject = localStream;
+      cameraTrack = localStream.getVideoTracks()[0];
+    } catch (e) {
+      appendChatSystem("Couldn't access camera/mic — you can still chat and watch together.");
+      localStream = new MediaStream();
+    }
+    return localStream;
+  }
+
+  function wireDataConn(conn) {
+    dataConn = conn;
+    dataConn.on("open", () => {
+      connected = true;
+      setStatus("connected", true);
+      document.getElementById("callControls").hidden = false;
+      appendChatSystem("Connected. Say hi!");
+      emit("room-connected", { isHost });
+    });
+    dataConn.on("data", (msg) => {
+      if (!msg || !msg.type) return;
+      emit(msg.type, msg);
+    });
+    dataConn.on("close", () => {
+      connected = false;
+      setStatus("not connected", false);
+      appendChatSystem("They left the room.");
+      document.getElementById("remoteEmpty").style.display = "flex";
+      document.getElementById("remoteVideo").srcObject = null;
+    });
+  }
+
+  function wireIncomingCall() {
+    peer.on("call", async (call) => {
+      const stream = await getLocalMedia();
+      call.answer(stream);
+      mediaCall = call;
+      call.on("stream", (remoteStream) => {
+        document.getElementById("remoteVideo").srcObject = remoteStream;
+        document.getElementById("remoteEmpty").style.display = "none";
+      });
+    });
+  }
+
+  function makeRoomCode() {
+    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no ambiguous chars
+    let code = "fa-";
+    for (let i = 0; i < 6; i++) code += alphabet[Math.floor(Math.random() * alphabet.length)];
+    return code;
+  }
+
+  async function create() {
+    setStatus("opening room…", false);
+    const roomCode = makeRoomCode();
+    peer = new Peer(roomCode);
+    isHost = true;
+    peer.on("open", async (id) => {
+      document.getElementById("roomCodeDisplay").hidden = false;
+      document.getElementById("codeBox").textContent = id.replace("fa-", "").toUpperCase();
+      setStatus("waiting for them to join…", false);
+      await getLocalMedia();
+      wireIncomingCall();
+
+      peer.on("connection", (conn) => {
+        wireDataConn(conn);
+      });
+    });
+    peer.on("error", (err) => {
+      if (err.type === "unavailable-id") {
+        appendChatSystem("That room code was just taken — creating a new one…");
+        create();
+      } else {
+        appendChatSystem("Connection error: " + err.type);
+      }
+    });
+  }
+
+  async function join(codeRaw) {
+    const code = (codeRaw || "").trim();
+    if (!code) return;
+    setStatus("joining…", false);
+    peer = new Peer();
+    isHost = false;
+    peer.on("open", async () => {
+      const remoteId = "fa-" + code.toLowerCase().replace(/^fa-/, "");
+      const stream = await getLocalMedia();
+      const conn = peer.connect(remoteId);
+      wireDataConn(conn);
+      const call = peer.call(remoteId, stream);
+      mediaCall = call;
+      call.on("stream", (remoteStream) => {
+        document.getElementById("remoteVideo").srcObject = remoteStream;
+        document.getElementById("remoteEmpty").style.display = "none";
+      });
+      document.getElementById("callControls").hidden = false;
+      wireIncomingCall();
+    });
+    peer.on("error", (err) => appendChatSystem("Couldn't connect — check the code. (" + err.type + ")"));
+  }
+
+  function hangup() {
+    if (dataConn) dataConn.close();
+    if (mediaCall) mediaCall.close();
+    if (peer) peer.destroy();
+    if (localStream) localStream.getTracks().forEach((t) => t.stop());
+    peer = null;
+    dataConn = null;
+    mediaCall = null;
+    localStream = null;
+    connected = false;
+    setStatus("not connected", false);
+    document.getElementById("roomCodeDisplay").hidden = true;
+    document.getElementById("callControls").hidden = true;
+    document.getElementById("localVideo").srcObject = null;
+    document.getElementById("remoteVideo").srcObject = null;
+    document.getElementById("remoteEmpty").style.display = "flex";
+  }
+
+  function toggleMic() {
+    if (!localStream) return;
+    const track = localStream.getAudioTracks()[0];
+    if (!track) return;
+    track.enabled = !track.enabled;
+    document.getElementById("micBtn").classList.toggle("active-off", !track.enabled);
+  }
+
+  function toggleCam() {
+    if (!localStream) return;
+    const track = localStream.getVideoTracks()[0];
+    if (!track) return;
+    track.enabled = !track.enabled;
+    document.getElementById("camBtn").classList.toggle("active-off", !track.enabled);
+  }
+
+  async function shareScreen() {
+    try {
+      const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      const screenTrack = screenStream.getVideoTracks()[0];
+      replaceOutgoingVideoTrack(screenTrack);
+      screenTrack.onended = () => {
+        if (cameraTrack) replaceOutgoingVideoTrack(cameraTrack);
+      };
+    } catch (e) {
+      /* user cancelled the picker */
+    }
+  }
+
+  function replaceOutgoingVideoTrack(newTrack) {
+    if (!mediaCall || !mediaCall.peerConnection) return;
+    const sender = mediaCall.peerConnection.getSenders().find((s) => s.track && s.track.kind === "video");
+    if (sender) sender.replaceTrack(newTrack);
+    document.getElementById("localVideo").srcObject = new MediaStream([newTrack, ...(localStream ? localStream.getAudioTracks() : [])]);
+  }
+
+  function appendChatSystem(text) {
+    const log = document.getElementById("chatLog");
+    const div = document.createElement("div");
+    div.className = "chat-msg";
+    div.innerHTML = `<span class="sys">${text}</span>`;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  return {
+    create,
+    join,
+    hangup,
+    toggleMic,
+    toggleCam,
+    shareScreen,
+    send,
+    on,
+    isConnected: () => connected,
+    get isHost() {
+      return isHost;
+    },
+  };
+})();
+
+/* ---------------- wire up the Room tab UI ---------------- */
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("createRoomBtn").addEventListener("click", () => {
+    Room.create();
+  });
+  document.getElementById("joinRoomBtn").addEventListener("click", () => {
+    const code = document.getElementById("joinCodeInput").value;
+    Room.join(code);
+  });
+  document.getElementById("micBtn").addEventListener("click", () => Room.toggleMic());
+  document.getElementById("camBtn").addEventListener("click", () => Room.toggleCam());
+  document.getElementById("screenBtn").addEventListener("click", () => Room.shareScreen());
+  document.getElementById("hangupBtn").addEventListener("click", () => Room.hangup());
+
+  const chatInput = document.getElementById("chatInput");
+  const chatSendBtn = document.getElementById("chatSendBtn");
+  function sendChat() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+    Room.send({ type: "chat", text });
+    appendChat(text, "me");
+    chatInput.value = "";
+  }
+  chatSendBtn.addEventListener("click", sendChat);
+  chatInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") sendChat();
+  });
+  Room.on("chat", (msg) => appendChat(msg.text, "them"));
+
+  function appendChat(text, who) {
+    const log = document.getElementById("chatLog");
+    const div = document.createElement("div");
+    div.className = "chat-msg " + who;
+    div.textContent = text;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+});
+
+</script>
+<script>
+/* ============================================================
+   Watch — loads a YouTube video and keeps play/pause/seek in sync
+   between both sides of the room using Room.send / Room.on.
+   ============================================================ */
+
+const Watch = (() => {
+  let player = null;
+  let apiReady = false;
+  let ignoreNextEvent = false; // true while we're applying a remote sync
+  let pendingVideoId = null;
+
+  function loadYouTubeAPI() {
+    if (window.YT && window.YT.Player) {
+      apiReady = true;
+      return;
+    }
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+    window.onYouTubeIframeAPIReady = () => {
+      apiReady = true;
+      if (pendingVideoId) createPlayer(pendingVideoId);
+    };
+  }
+
+  function extractVideoId(url) {
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([\w-]{11})/,
+    ];
+    for (const p of patterns) {
+      const m = url.match(p);
+      if (m) return m[1];
+    }
+    if (/^[\w-]{11}$/.test(url.trim())) return url.trim();
+    return null;
+  }
+
+  function createPlayer(videoId) {
+    document.getElementById("ytEmpty").style.display = "none";
+    if (player) {
+      player.loadVideoById(videoId);
+      return;
+    }
+    player = new YT.Player("ytPlayer", {
+      videoId,
+      playerVars: { rel: 0, playsinline: 1 },
+      events: {
+        onStateChange: onPlayerStateChange,
+      },
+    });
+  }
+
+  function onPlayerStateChange(e) {
+    if (ignoreNextEvent) {
+      ignoreNextEvent = false;
+      return;
+    }
+    if (e.data === YT.PlayerState.PLAYING) {
+      Room.send({ type: "watch-sync", action: "play", time: player.getCurrentTime() });
+    } else if (e.data === YT.PlayerState.PAUSED) {
+      Room.send({ type: "watch-sync", action: "pause", time: player.getCurrentTime() });
+    }
+  }
+
+  function loadAndShare(url) {
+    const id = extractVideoId(url);
+    if (!id) {
+      alert("That doesn't look like a YouTube link.");
+      return;
+    }
+    Room.send({ type: "watch-load", videoId: id });
+    if (apiReady) createPlayer(id);
+    else {
+      pendingVideoId = id;
+      loadYouTubeAPI();
+    }
+  }
+
+  function init() {
+    loadYouTubeAPI();
+
+    Room.on("watch-load", (msg) => {
+      if (apiReady) createPlayer(msg.videoId);
+      else {
+        pendingVideoId = msg.videoId;
+        loadYouTubeAPI();
+      }
+    });
+
+    Room.on("watch-sync", (msg) => {
+      if (!player) return;
+      ignoreNextEvent = true;
+      const drift = Math.abs(player.getCurrentTime() - msg.time);
+      if (drift > 1.2) player.seekTo(msg.time, true);
+      if (msg.action === "play") player.playVideo();
+      if (msg.action === "pause") player.pauseVideo();
+    });
+
+    document.getElementById("loadVideoBtn").addEventListener("click", () => {
+      const url = document.getElementById("ytUrlInput").value;
+      loadAndShare(url);
+    });
+  }
+
+  return { init };
+})();
+
+document.addEventListener("DOMContentLoaded", () => Watch.init());
+
+</script>
+<script>
+/* ============================================================
+   Gallery — shows the baked-in PHOTOS array plus anything added
+   through the passcode-gated uploader (saved to this browser only,
+   via localStorage).
+   ============================================================ */
+
+// Change this to something only Avi knows.
+const AVI_PASSCODE = "changeme";
+
+const Gallery = (() => {
+  const STORAGE_KEY = "fa_gallery_local_photos";
+
+  function getLocalPhotos() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveLocalPhotos(list) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  }
+
+  function render() {
+    const grid = document.getElementById("photoGrid");
+    grid.innerHTML = "";
+    const all = [...PHOTOS, ...getLocalPhotos()];
+    if (!all.length) {
+      grid.innerHTML = `<div class="photo-empty">No photos yet. Avi can unlock the uploader above to add some.</div>`;
+      return;
+    }
+    all.forEach((src) => {
+      const div = document.createElement("div");
+      div.className = "photo-thumb";
+      const img = document.createElement("img");
+      img.src = src;
+      img.loading = "lazy";
+      img.alt = "";
+      div.appendChild(img);
+      div.addEventListener("click", () => openLightbox(src));
+      grid.appendChild(div);
+    });
+  }
+
+  function openLightbox(src) {
+    document.getElementById("lightboxImg").src = src;
+    document.getElementById("lightbox").hidden = false;
+  }
+
+  function init() {
+    const unlockBtn = document.getElementById("unlockGalleryBtn");
+    const addPanel = document.getElementById("galleryAdd");
+    const photoInput = document.getElementById("photoInput");
+
+    unlockBtn.addEventListener("click", () => {
+      if (!addPanel.hidden) {
+        addPanel.hidden = true;
+        return;
+      }
+      const entered = prompt("Avi's passcode:");
+      if (entered === null) return;
+      if (entered === AVI_PASSCODE) {
+        addPanel.hidden = false;
+      } else {
+        alert("That's not it.");
+      }
+    });
+
+    photoInput.addEventListener("change", async (e) => {
+      const files = [...e.target.files];
+      const current = getLocalPhotos();
+      for (const file of files) {
+        const dataUrl = await fileToDataUrl(file);
+        current.push(dataUrl);
+      }
+      saveLocalPhotos(current);
+      render();
+      photoInput.value = "";
+    });
+
+    document.getElementById("lightboxClose").addEventListener("click", closeLightbox);
+    document.getElementById("lightbox").addEventListener("click", (e) => {
+      if (e.target.id === "lightbox") closeLightbox();
+    });
+
+    function closeLightbox() {
+      document.getElementById("lightbox").hidden = true;
+    }
+
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+  }
+
+  return { render, init };
+})();
+
+document.addEventListener("DOMContentLoaded", () => Gallery.init());
+
+</script>
+<script>
+/* ============================================================
+   Games — hub navigation, plus every game's logic.
+   Two-player games (ttt, connect4, uno, chess) sync through
+   Room.send({type:'game-move', game, ...}) and Room.on('game-move', ...).
+   Chess lives in chess-game.js since it needs the chess.js/chessboard.js libs.
+   ============================================================ */
+
+const GameHub = (() => {
+  let activeGame = null;
+
+  function init() {
+    document.querySelectorAll(".game-card").forEach((card) => {
+      card.addEventListener("click", () => open(card.dataset.game));
+    });
+    document.getElementById("backToHubBtn").addEventListener("click", closeGame);
+
+    Room.on("game-move", (msg) => {
+      if (activeGame && activeGame.key === msg.game && activeGame.onRemote) {
+        activeGame.onRemote(msg);
+      }
+    });
+  }
+
+  function open(key) {
+    document.getElementById("gameHub").hidden = true;
+    const stage = document.getElementById("gameStage");
+    stage.hidden = false;
+    const board = document.getElementById("gameBoard");
+    board.innerHTML = "";
+    document.getElementById("gameStatus").textContent = "";
+
+    const games = {
+      ttt: TicTacToe,
+      connect4: Connect4,
+      uno: Uno,
+      chess: window.ChessGame,
+      wordsearch: WordSearch,
+      candy: CandyMatch,
+      memory: MemoryMatch,
+      wyr: WouldYouRather,
+    };
+    activeGame = games[key];
+    if (!activeGame) return;
+    activeGame.key = key;
+    activeGame.start(board);
+  }
+
+  function closeGame() {
+    if (activeGame && activeGame.stop) activeGame.stop();
+    activeGame = null;
+    document.getElementById("gameHub").hidden = false;
+    document.getElementById("gameStage").hidden = true;
+  }
+
+  function setStatus(text) {
+    document.getElementById("gameStatus").textContent = text;
+  }
+
+  return { init, setStatus };
+})();
+
+document.addEventListener("DOMContentLoaded", () => GameHub.init());
+
+/* ============================================================
+   Tic-Tac-Toe
+   ============================================================ */
+const TicTacToe = (() => {
+  let board, turn, mySymbol, cells;
+
+  function mySide() {
+    return Room.isConnected() ? (Room.isHost ? "X" : "O") : null;
+  }
+
+  function start(root) {
+    board = Array(9).fill(null);
+    turn = "X";
+    mySymbol = mySide();
+    render(root);
+    updateStatus();
+  }
+
+  function render(root) {
+    const grid = document.createElement("div");
+    grid.className = "ttt-grid";
+    cells = [];
+    for (let i = 0; i < 9; i++) {
+      const cell = document.createElement("div");
+      cell.className = "ttt-cell";
+      cell.addEventListener("click", () => tryMove(i));
+      grid.appendChild(cell);
+      cells.push(cell);
+    }
+    root.appendChild(grid);
+    const resetBtn = document.createElement("button");
+    resetBtn.className = "btn ghost";
+    resetBtn.textContent = "Restart";
+    resetBtn.style.marginTop = "1rem";
+    resetBtn.addEventListener("click", () => {
+      board = Array(9).fill(null);
+      turn = "X";
+      cells.forEach((c) => (c.textContent = ""));
+      updateStatus();
+      Room.send({ type: "game-move", game: "ttt", action: "reset" });
+    });
+    root.appendChild(resetBtn);
+  }
+
+  function tryMove(i) {
+    if (board[i]) return;
+    if (mySymbol && turn !== mySymbol) return;
+    place(i, turn);
+    if (Room.isConnected()) Room.send({ type: "game-move", game: "ttt", action: "move", index: i, symbol: turn });
+    advanceTurn();
+  }
+
+  function place(i, symbol) {
+    board[i] = symbol;
+    cells[i].textContent = symbol === "X" ? "✕" : "○";
+  }
+
+  function advanceTurn() {
+    const winner = checkWinner();
+    if (winner) {
+      GameHub.setStatus(winner === "draw" ? "It's a draw." : `${winner} wins!`);
+      return;
+    }
+    turn = turn === "X" ? "O" : "X";
+    updateStatus();
+  }
+
+  function updateStatus() {
+    if (!Room.isConnected()) {
+      GameHub.setStatus(`${turn}'s turn (pass the device)`);
+    } else {
+      GameHub.setStatus(turn === mySymbol ? "Your turn" : "Their turn");
+    }
+  }
+
+  function checkWinner() {
+    const lines = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6],
+    ];
+    for (const [a, b, c] of lines) {
+      if (board[a] && board[a] === board[b] && board[a] === board[c]) return board[a];
+    }
+    if (board.every((v) => v)) return "draw";
+    return null;
+  }
+
+  function onRemote(msg) {
+    if (msg.action === "reset") {
+      board = Array(9).fill(null);
+      turn = "X";
+      cells.forEach((c) => (c.textContent = ""));
+      updateStatus();
+      return;
+    }
+    if (msg.action === "move") {
+      place(msg.index, msg.symbol);
+      advanceTurn();
+    }
+  }
+
+  return { start, onRemote };
+})();
+
+/* ============================================================
+   Connect 4
+   ============================================================ */
+const Connect4 = (() => {
+  const ROWS = 6, COLS = 7;
+  let board, turn, mySymbol, cellEls;
+
+  function mySide() {
+    return Room.isConnected() ? (Room.isHost ? "red" : "yellow") : null;
+  }
+
+  function start(root) {
+    board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+    turn = "red";
+    mySymbol = mySide();
+    render(root);
+    updateStatus();
+  }
+
+  function render(root) {
+    const grid = document.createElement("div");
+    grid.className = "c4-grid";
+    cellEls = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const cell = document.createElement("div");
+        cell.className = "c4-cell";
+        cell.addEventListener("click", () => tryDrop(c));
+        grid.appendChild(cell);
+        cellEls[r][c] = cell;
+      }
+    }
+    root.appendChild(grid);
+    const resetBtn = document.createElement("button");
+    resetBtn.className = "btn ghost";
+    resetBtn.textContent = "Restart";
+    resetBtn.style.marginTop = "1rem";
+    resetBtn.addEventListener("click", () => {
+      board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+      turn = "red";
+      cellEls.flat().forEach((c) => (c.className = "c4-cell"));
+      updateStatus();
+      Room.send({ type: "game-move", game: "connect4", action: "reset" });
+    });
+    root.appendChild(resetBtn);
+  }
+
+  function lowestOpenRow(col) {
+    for (let r = ROWS - 1; r >= 0; r--) if (!board[r][col]) return r;
+    return -1;
+  }
+
+  function tryDrop(col) {
+    if (mySymbol && turn !== mySymbol) return;
+    const row = lowestOpenRow(col);
+    if (row === -1) return;
+    drop(col, turn);
+    if (Room.isConnected()) Room.send({ type: "game-move", game: "connect4", action: "drop", col, symbol: turn });
+    advanceTurn();
+  }
+
+  function drop(col, symbol) {
+    const row = lowestOpenRow(col);
+    if (row === -1) return;
+    board[row][col] = symbol;
+    cellEls[row][col].classList.add(symbol);
+  }
+
+  function advanceTurn() {
+    const winner = checkWinner();
+    if (winner) {
+      GameHub.setStatus(`${winner} wins!`);
+      return;
+    }
+    turn = turn === "red" ? "yellow" : "red";
+    updateStatus();
+  }
+
+  function updateStatus() {
+    if (!Room.isConnected()) {
+      GameHub.setStatus(`${turn}'s turn (pass the device)`);
+    } else {
+      GameHub.setStatus(turn === mySymbol ? "Your turn" : "Their turn");
+    }
+  }
+
+  function checkWinner() {
+    const dirs = [[0, 1], [1, 0], [1, 1], [1, -1]];
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const symbol = board[r][c];
+        if (!symbol) continue;
+        for (const [dr, dc] of dirs) {
+          let count = 0;
+          for (let k = 0; k < 4; k++) {
+            const rr = r + dr * k, cc = c + dc * k;
+            if (rr >= 0 && rr < ROWS && cc >= 0 && cc < COLS && board[rr][cc] === symbol) count++;
+            else break;
+          }
+          if (count === 4) return symbol;
+        }
+      }
+    }
+    return null;
+  }
+
+  function onRemote(msg) {
+    if (msg.action === "reset") {
+      board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+      turn = "red";
+      cellEls.flat().forEach((c) => (c.className = "c4-cell"));
+      updateStatus();
+      return;
+    }
+    if (msg.action === "drop") {
+      drop(msg.col, msg.symbol);
+      advanceTurn();
+    }
+  }
+
+  return { start, onRemote };
+})();
+
+/* ============================================================
+   Uno (simplified, 2-player, host-authoritative)
+   ============================================================ */
+const Uno = (() => {
+  const COLORS = ["red", "yellow", "green", "blue"];
+  const COLOR_HEX = { red: "#E24B4A", yellow: "#EF9F27", green: "#639922", blue: "#378ADD", wild: "#2C2C2A" };
+  let state, root, isHostSide;
+
+  function buildDeck() {
+    const deck = [];
+    let id = 0;
+    COLORS.forEach((color) => {
+      deck.push({ id: id++, color, value: "0" });
+      for (let n = 1; n <= 9; n++) {
+        deck.push({ id: id++, color, value: String(n) });
+        deck.push({ id: id++, color, value: String(n) });
+      }
+      ["skip", "reverse", "draw2"].forEach((v) => {
+        deck.push({ id: id++, color, value: v });
+        deck.push({ id: id++, color, value: v });
+      });
+    });
+    for (let i = 0; i < 4; i++) {
+      deck.push({ id: id++, color: "wild", value: "wild" });
+      deck.push({ id: id++, color: "wild", value: "wild4" });
+    }
+    return shuffle(deck);
+  }
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function newGame() {
+    const deck = buildDeck();
+    const hostHand = deck.splice(0, 7);
+    const guestHand = deck.splice(0, 7);
+    let discard = deck.shift();
+    while (discard.color === "wild") {
+      deck.push(discard);
+      discard = deck.shift();
+    }
+    return {
+      deck,
+      hostHand,
+      guestHand,
+      discard: [discard],
+      currentColor: discard.color,
+      turn: "host",
+    };
+  }
+
+  function start(rootEl) {
+    root = rootEl;
+    isHostSide = Room.isHost;
+    if (!Room.isConnected()) {
+      root.innerHTML = `<p style="color:var(--mauve); max-width:360px; text-align:center;">Uno needs both of you connected in the Room tab first — create or join a room, then come back here.</p>`;
+      return;
+    }
+    if (isHostSide) {
+      state = newGame();
+      broadcastState();
+    } else {
+      GameHub.setStatus("Waiting for the host to deal the cards…");
+    }
+    renderShell();
+  }
+
+  function renderShell() {
+    root.innerHTML = `
+      <div style="text-align:center;">
+        <div class="uno-pile">
+          <div>
+            <p class="kicker">draw pile</p>
+            <div class="uno-card" id="unoDraw" style="background:#2C2C2A;">🂠</div>
+          </div>
+          <div>
+            <p class="kicker">discard</p>
+            <div class="uno-card" id="unoDiscard"></div>
+          </div>
+        </div>
+        <p class="hint" id="unoOppCount"></p>
+        <div class="uno-hand" id="unoHand"></div>
+      </div>
+    `;
+    document.getElementById("unoDraw").addEventListener("click", () => act({ action: "draw" }));
+  }
+
+  function renderState() {
+    if (!state || !root) return;
+    const myHand = isHostSide ? state.hostHand : state.guestHand;
+    const oppCount = isHostSide ? state.guestHand.length : state.hostHand.length;
+    const top = state.discard[state.discard.length - 1];
+
+    const discardEl = document.getElementById("unoDiscard");
+    if (discardEl) {
+      discardEl.textContent = labelFor(top);
+      discardEl.style.background = COLOR_HEX[state.currentColor] || COLOR_HEX[top.color];
+    }
+    const oppEl = document.getElementById("unoOppCount");
+    if (oppEl) oppEl.textContent = `they have ${oppCount} card${oppCount === 1 ? "" : "s"}`;
+
+    const handEl = document.getElementById("unoHand");
+    if (handEl) {
+      handEl.innerHTML = "";
+      myHand.forEach((card) => {
+        const div = document.createElement("div");
+        div.className = "uno-card";
+        div.style.background = COLOR_HEX[card.color];
+        div.textContent = labelFor(card);
+        div.addEventListener("click", () => playCard(card));
+        handEl.appendChild(div);
+      });
+    }
+
+    const mySide = isHostSide ? "host" : "guest";
+    GameHub.setStatus(state.turn === mySide ? "Your turn" : "Their turn");
+  }
+
+  function labelFor(card) {
+    const map = { skip: "⊘", reverse: "⟲", draw2: "+2", wild: "★", wild4: "+4" };
+    return map[card.value] || card.value;
+  }
+
+  function isLegal(card, s) {
+    const top = s.discard[s.discard.length - 1];
+    if (card.color === "wild") return true;
+    return card.color === s.currentColor || card.value === top.value;
+  }
+
+  function playCard(card) {
+    const mySide = isHostSide ? "host" : "guest";
+    if (state.turn !== mySide) return;
+    if (!isLegal(card, state)) return;
+    let chosenColor = card.color;
+    if (card.color === "wild") {
+      chosenColor = prompt("Choose a color: red, yellow, green, blue", "red");
+      if (!COLORS.includes(chosenColor)) chosenColor = "red";
+    }
+    act({ action: "play", cardId: card.id, chosenColor });
+  }
+
+  function act(payload) {
+    if (isHostSide) {
+      applyAction("host", payload);
+    } else {
+      Room.send({ type: "game-move", game: "uno", to: "host", ...payload });
+    }
+  }
+
+  function applyAction(actor, payload) {
+    const handKey = actor === "host" ? "hostHand" : "guestHand";
+    const opponent = actor === "host" ? "guest" : "host";
+
+    if (payload.action === "draw") {
+      drawCards(actor, 1);
+      state.turn = opponent;
+    } else if (payload.action === "play") {
+      const hand = state[handKey];
+      const idx = hand.findIndex((c) => c.id === payload.cardId);
+      if (idx === -1) return;
+      const card = hand[idx];
+      if (!isLegal(card, state)) return;
+      hand.splice(idx, 1);
+      state.discard.push(card);
+      state.currentColor = card.color === "wild" ? payload.chosenColor : card.color;
+
+      if (hand.length === 0) {
+        broadcastState();
+        renderState();
+        GameHub.setStatus((actor === (isHostSide ? "host" : "guest") ? "You" : "They") + " win! 🎉");
+        return;
+      }
+
+      if (["skip", "reverse"].includes(card.value)) {
+        state.turn = actor; // in 2-player, skip/reverse just goes again
+      } else if (card.value === "draw2") {
+        drawCards(opponent, 2);
+        state.turn = actor;
+      } else if (card.value === "wild4") {
+        drawCards(opponent, 4);
+        state.turn = actor;
+      } else {
+        state.turn = opponent;
+      }
+    }
+    broadcastState();
+    renderState();
+  }
+
+  function drawCards(side, n) {
+    const handKey = side === "host" ? "hostHand" : "guestHand";
+    for (let i = 0; i < n; i++) {
+      if (state.deck.length === 0) reshuffleDiscardIntoDeck();
+      const card = state.deck.shift();
+      if (card) state[handKey].push(card);
+    }
+  }
+
+  function reshuffleDiscardIntoDeck() {
+    const top = state.discard.pop();
+    state.deck = shuffle(state.discard);
+    state.discard = [top];
+  }
+
+  function broadcastState() {
+    if (!isHostSide) return;
+    Room.send({ type: "game-move", game: "uno", action: "state", state });
+    renderState();
+  }
+
+  function onRemote(msg) {
+    if (isHostSide && msg.to === "host") {
+      applyAction("guest", msg);
+      return;
+    }
+    if (!isHostSide && msg.action === "state") {
+      state = msg.state;
+      renderState();
+    }
+  }
+
+  return { start, onRemote };
+})();
+
+/* ============================================================
+   Word Search (solo)
+   ============================================================ */
+const WordSearch = (() => {
+  const WORDS = ["LOVE", "HEART", "TOGETHER", "FOREVER", "SWEET", "HUG", "KISS", "DREAM"];
+  const SIZE = 12;
+  let grid, root, cellEls, found, selecting, selection;
+
+  function start(rootEl) {
+    root = rootEl;
+    found = new Set();
+    build();
+    render();
+    GameHub.setStatus("Click-drag across letters to find a word.");
+  }
+
+  function build() {
+    grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
+    const dirs = [[0, 1], [1, 0], [1, 1], [-1, 1]];
+    WORDS.forEach((word) => {
+      for (let attempt = 0; attempt < 60; attempt++) {
+        const [dr, dc] = dirs[Math.floor(Math.random() * dirs.length)];
+        const r0 = Math.floor(Math.random() * SIZE);
+        const c0 = Math.floor(Math.random() * SIZE);
+        const r1 = r0 + dr * (word.length - 1);
+        const c1 = c0 + dc * (word.length - 1);
+        if (r1 < 0 || r1 >= SIZE || c1 < 0 || c1 >= SIZE) continue;
+        let ok = true;
+        for (let i = 0; i < word.length; i++) {
+          const r = r0 + dr * i, c = c0 + dc * i;
+          if (grid[r][c] && grid[r][c] !== word[i]) ok = false;
+        }
+        if (!ok) continue;
+        for (let i = 0; i < word.length; i++) {
+          const r = r0 + dr * i, c = c0 + dc * i;
+          grid[r][c] = word[i];
+        }
+        break;
+      }
+    });
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for (let r = 0; r < SIZE; r++)
+      for (let c = 0; c < SIZE; c++)
+        if (!grid[r][c]) grid[r][c] = alphabet[Math.floor(Math.random() * alphabet.length)];
+  }
+
+  function render() {
+    root.innerHTML = "";
+    const wrap = document.createElement("div");
+    const gridEl = document.createElement("div");
+    gridEl.className = "ws-grid";
+    gridEl.style.gridTemplateColumns = `repeat(${SIZE}, 32px)`;
+    cellEls = [];
+    selecting = false;
+    selection = [];
+
+    for (let r = 0; r < SIZE; r++) {
+      cellEls.push([]);
+      for (let c = 0; c < SIZE; c++) {
+        const cell = document.createElement("div");
+        cell.className = "ws-cell";
+        cell.textContent = grid[r][c];
+        cell.dataset.r = r;
+        cell.dataset.c = c;
+        cell.addEventListener("mousedown", () => beginSelect(r, c));
+        cell.addEventListener("mouseenter", () => extendSelect(r, c));
+        gridEl.appendChild(cell);
+        cellEls[r].push(cell);
+      }
+    }
+    document.addEventListener("mouseup", finishSelect);
+    wrap.appendChild(gridEl);
+
+    const wordsEl = document.createElement("div");
+    wordsEl.className = "ws-words";
+    WORDS.forEach((w) => {
+      const span = document.createElement("span");
+      span.className = "ws-word";
+      span.textContent = w;
+      span.dataset.word = w;
+      wordsEl.appendChild(span);
+    });
+    wrap.appendChild(wordsEl);
+    root.appendChild(wrap);
+  }
+
+  function beginSelect(r, c) {
+    selecting = true;
+    selection = [[r, c]];
+    paintSelection();
+  }
+  function extendSelect(r, c) {
+    if (!selecting) return;
+    const [r0, c0] = selection[0];
+    const dr = Math.sign(r - r0), dc = Math.sign(c - c0);
+    const len = Math.max(Math.abs(r - r0), Math.abs(c - c0)) + 1;
+    const path = [];
+    for (let i = 0; i < len; i++) path.push([r0 + dr * i, c0 + dc * i]);
+    selection = path;
+    paintSelection();
+  }
+  function paintSelection() {
+    cellEls.flat().forEach((c) => c.classList.remove("selecting"));
+    selection.forEach(([r, c]) => cellEls[r][c].classList.add("selecting"));
+  }
+  function finishSelect() {
+    if (!selecting) return;
+    selecting = false;
+    const letters = selection.map(([r, c]) => grid[r][c]).join("");
+    const reversed = [...letters].reverse().join("");
+    const match = WORDS.find((w) => (w === letters || w === reversed) && !found.has(w));
+    if (match) {
+      found.add(match);
+      selection.forEach(([r, c]) => {
+        cellEls[r][c].classList.remove("selecting");
+        cellEls[r][c].classList.add("found");
+      });
+      const label = [...root.querySelectorAll(".ws-word")].find((el) => el.dataset.word === match);
+      if (label) label.classList.add("found");
+      if (found.size === WORDS.length) GameHub.setStatus("Found them all! 💕");
+    } else {
+      cellEls.flat().forEach((c) => c.classList.remove("selecting"));
+    }
+    selection = [];
+  }
+
+  function stop() {
+    document.removeEventListener("mouseup", finishSelect);
+  }
+
+  return { start, stop };
+})();
+
+/* ============================================================
+   Candy Match (solo match-3)
+   ============================================================ */
+const CandyMatch = (() => {
+  const SIZE = 6;
+  const CANDIES = ["🍬", "🍭", "🍫", "🍩", "🍪", "🍡"];
+  let grid, root, cellEls, selected, score;
+
+  function start(rootEl) {
+    root = rootEl;
+    score = 0;
+    selected = null;
+    grid = Array.from({ length: SIZE }, () => Array.from({ length: SIZE }, randCandy));
+    resolveMatchesLoop();
+    render();
+  }
+
+  function randCandy() {
+    return CANDIES[Math.floor(Math.random() * CANDIES.length)];
+  }
+
+  function render() {
+    root.innerHTML = "";
+    const gridEl = document.createElement("div");
+    gridEl.className = "candy-grid";
+    cellEls = [];
+    for (let r = 0; r < SIZE; r++) {
+      cellEls.push([]);
+      for (let c = 0; c < SIZE; c++) {
+        const cell = document.createElement("div");
+        cell.className = "candy-cell";
+        cell.textContent = grid[r][c];
+        cell.addEventListener("click", () => handleClick(r, c));
+        gridEl.appendChild(cell);
+        cellEls[r].push(cell);
+      }
+    }
+    root.appendChild(gridEl);
+    GameHub.setStatus(`Score: ${score}`);
+  }
+
+  function handleClick(r, c) {
+    if (!selected) {
+      selected = [r, c];
+      cellEls[r][c].classList.add("selected");
+      return;
+    }
+    const [r0, c0] = selected;
+    cellEls[r0][c0].classList.remove("selected");
+    const adjacent = Math.abs(r - r0) + Math.abs(c - c0) === 1;
+    if (adjacent) {
+      swap(r0, c0, r, c);
+      const matches = findMatches();
+      if (matches.length) {
+        resolveMatchesLoop();
+        render();
+      } else {
+        swap(r0, c0, r, c); // revert
+        render();
+      }
+    }
+    selected = null;
+  }
+
+  function swap(r0, c0, r1, c1) {
+    const tmp = grid[r0][c0];
+    grid[r0][c0] = grid[r1][c1];
+    grid[r1][c1] = tmp;
+  }
+
+  function findMatches() {
+    const matched = [];
+    for (let r = 0; r < SIZE; r++) {
+      for (let c = 0; c < SIZE - 2; c++) {
+        if (grid[r][c] && grid[r][c] === grid[r][c + 1] && grid[r][c] === grid[r][c + 2]) {
+          matched.push([r, c], [r, c + 1], [r, c + 2]);
+        }
+      }
+    }
+    for (let c = 0; c < SIZE; c++) {
+      for (let r = 0; r < SIZE - 2; r++) {
+        if (grid[r][c] && grid[r][c] === grid[r + 1][c] && grid[r][c] === grid[r + 2][c]) {
+          matched.push([r, c], [r + 1, c], [r + 2, c]);
+        }
+      }
+    }
+    return matched;
+  }
+
+  function resolveMatchesLoop() {
+    let matches = findMatches();
+    let guard = 0;
+    while (matches.length && guard < 20) {
+      score += matches.length;
+      matches.forEach(([r, c]) => (grid[r][c] = null));
+      for (let c = 0; c < SIZE; c++) {
+        let write = SIZE - 1;
+        for (let r = SIZE - 1; r >= 0; r--) {
+          if (grid[r][c] !== null) {
+            grid[write][c] = grid[r][c];
+            if (write !== r) grid[r][c] = null;
+            write--;
+          }
+        }
+        for (let r = write; r >= 0; r--) grid[r][c] = randCandy();
+      }
+      matches = findMatches();
+      guard++;
+    }
+  }
+
+  return { start };
+})();
+
+/* ============================================================
+   Memory Match (solo)
+   ============================================================ */
+const MemoryMatch = (() => {
+  const EMOJI = ["💖", "🌙", "⭐", "🌸", "🎵", "🍩", "🎮", "☕"];
+  let cards, flipped, matchedCount, root, cellEls, busy, moves;
+
+  function start(rootEl) {
+    root = rootEl;
+    cards = shuffle([...EMOJI, ...EMOJI]);
+    flipped = [];
+    matchedCount = 0;
+    moves = 0;
+    busy = false;
+    render();
+  }
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function render() {
+    root.innerHTML = "";
+    const gridEl = document.createElement("div");
+    gridEl.className = "memory-grid";
+    cellEls = [];
+    cards.forEach((emoji, i) => {
+      const cell = document.createElement("div");
+      cell.className = "memory-card";
+      cell.dataset.index = i;
+      cell.addEventListener("click", () => flip(i));
+      gridEl.appendChild(cell);
+      cellEls.push(cell);
+    });
+    root.appendChild(gridEl);
+    updateStatus();
+  }
+
+  function updateStatus() {
+    GameHub.setStatus(`Moves: ${moves} · Pairs found: ${matchedCount}/${EMOJI.length}`);
+  }
+
+  function flip(i) {
+    if (busy || flipped.includes(i) || cellEls[i].classList.contains("matched")) return;
+    cellEls[i].textContent = cards[i];
+    cellEls[i].classList.add("flipped");
+    flipped.push(i);
+    if (flipped.length === 2) {
+      moves++;
+      busy = true;
+      const [a, b] = flipped;
+      if (cards[a] === cards[b]) {
+        cellEls[a].classList.add("matched");
+        cellEls[b].classList.add("matched");
+        matchedCount++;
+        flipped = [];
+        busy = false;
+        updateStatus();
+        if (matchedCount === EMOJI.length) GameHub.setStatus("All matched! 💕");
+      } else {
+        setTimeout(() => {
+          cellEls[a].textContent = "";
+          cellEls[b].textContent = "";
+          cellEls[a].classList.remove("flipped");
+          cellEls[b].classList.remove("flipped");
+          flipped = [];
+          busy = false;
+          updateStatus();
+        }, 850);
+      }
+    }
+  }
+
+  return { start };
+})();
+
+/* ============================================================
+   Would You Rather (solo)
+   ============================================================ */
+const WouldYouRather = (() => {
+  const PAIRS = [
+    ["Travel the world together", "Build our dream home together"],
+    ["Watch movies all weekend", "Go on a spontaneous road trip"],
+    ["Cook every meal together", "Try a new restaurant every week"],
+    ["Get a pet together", "Learn a new skill together"],
+    ["Slow, quiet evenings", "Adventurous, busy weekends"],
+    ["Never argue but grow slowly", "Argue sometimes but grow fast"],
+  ];
+  let index, root;
+
+  function start(rootEl) {
+    root = rootEl;
+    index = 0;
+    render();
+  }
+
+  function render() {
+    root.innerHTML = "";
+    const [a, b] = PAIRS[index];
+    const wrap = document.createElement("div");
+    wrap.className = "wyr-card";
+    wrap.innerHTML = `
+      <p class="kicker">would you rather…</p>
+      <div class="wyr-options">
+        <button class="wyr-opt btn secondary" id="optA">${a}</button>
+        <button class="wyr-opt btn secondary" id="optB">${b}</button>
+      </div>
+      <button class="btn ghost" id="nextWyr" style="margin-top:1.5rem;">Next question →</button>
+    `;
+    root.appendChild(wrap);
+    document.getElementById("optA").addEventListener("click", () => choose("optA"));
+    document.getElementById("optB").addEventListener("click", () => choose("optB"));
+    document.getElementById("nextWyr").addEventListener("click", () => {
+      index = (index + 1) % PAIRS.length;
+      render();
+    });
+    GameHub.setStatus(`Question ${index + 1} of ${PAIRS.length}`);
+  }
+
+  function choose(which) {
+    document.getElementById(which).style.borderColor = "var(--rose)";
+    document.getElementById(which).style.color = "var(--rose-soft)";
+  }
+
+  return { start };
+})();
+
+</script>
+<script>
+/* ============================================================
+   Chess — full legal chess via chess.js (rules engine) and
+   chessboard.js (drag/drop board UI), moves synced through Room.
+   Whoever created the room plays white.
+   ============================================================ */
+
+const ChessGame = (() => {
+  let game, board, myColor;
+
+  function start(root) {
+    root.innerHTML = `<div id="chessBoard"></div>`;
+    game = new Chess();
+    myColor = !Room.isConnected() ? null : Room.isHost ? "w" : "b";
+
+    board = Chessboard("chessBoard", {
+      draggable: true,
+      position: "start",
+      pieceTheme: "https://cdnjs.cloudflare.com/ajax/libs/chessboardjs/1.0.0/img/chesspieces/wikipedia/{piece}.png",
+      onDragStart,
+      onDrop,
+      onSnapEnd: () => board.position(game.fen()),
+      orientation: myColor === "b" ? "black" : "white",
+    });
+
+    updateStatus();
+  }
+
+  function onDragStart(source, piece) {
+    if (game.game_over()) return false;
+    if (myColor && piece.search(myColor) !== 0) return false;
+    if (myColor && game.turn() !== myColor) return false;
+  }
+
+  function onDrop(source, target) {
+    const move = game.move({ from: source, to: target, promotion: "q" });
+    if (move === null) return "snapback";
+    if (Room.isConnected()) {
+      Room.send({ type: "game-move", game: "chess", from: source, to: target, promotion: "q" });
+    }
+    updateStatus();
+  }
+
+  function onRemote(msg) {
+    const move = game.move({ from: msg.from, to: msg.to, promotion: msg.promotion || "q" });
+    if (move) board.position(game.fen());
+    updateStatus();
+  }
+
+  function updateStatus() {
+    let text = game.turn() === "w" ? "White to move" : "Black to move";
+    if (game.in_checkmate()) text = (game.turn() === "w" ? "Black" : "White") + " wins by checkmate";
+    else if (game.in_draw()) text = "Draw";
+    else if (game.in_check()) text += " · check";
+    if (myColor) text += myColor === game.turn() ? " (you)" : " (them)";
+    GameHub.setStatus(text);
+  }
+
+  return { start, onRemote };
+})();
+
+window.ChessGame = ChessGame;
+
+</script>
+<script>
+/* ============================================================
+   script.js — makes the site installable as a real app:
+   registers the service worker and shows an "Install app" button
+   (on the Home tab) when the browser offers to install it.
+   ============================================================ */
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {
+      /* fine if this fails, e.g. when opened as a local file */
+    });
+  });
+}
+
+let deferredInstallPrompt = null;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  showInstallButton();
+});
+
+window.addEventListener("appinstalled", () => {
+  deferredInstallPrompt = null;
+  hideInstallButton();
+});
+
+function showInstallButton() {
+  if (document.getElementById("installAppBtn")) return;
+  const quickLinks = document.querySelector(".quick-links");
+  if (!quickLinks) return;
+  const btn = document.createElement("button");
+  btn.id = "installAppBtn";
+  btn.className = "quick-card";
+  btn.innerHTML = `<span class="ic">⬇️</span><span>Install this app</span>`;
+  btn.addEventListener("click", async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    hideInstallButton();
+  });
+  quickLinks.appendChild(btn);
+}
+
+function hideInstallButton() {
+  const btn = document.getElementById("installAppBtn");
+  if (btn) btn.remove();
+}
+
+</script>
+</body>
+</html>
